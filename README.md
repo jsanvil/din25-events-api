@@ -60,11 +60,11 @@ _Examples:_
 
 ### Authentication
 
-Header token authentication is required for POST, PUT, and DELETE requests.
+**Header** token authentication is required for all the requests.
 
-`x-api-key`: API key for authentication.
+**`x-api-key`**: API key for authentication.
 
-A valid `API_KEY` would be available in students Moodle.
+**🔐 A valid `API_KEY` would be available in students _Moodle_.**
 
 _Example:_
 
@@ -73,6 +73,28 @@ curl -X POST https://din25-events.jacinto-sanchez.workers.dev/api/v1/events \
 -H "x-api-key: API_KEY" \
 -H "Content-Type: application/json" \
 -d '{"title": "New Event", "description": "This is a new event.", "location": "New Location", "date": "2025-01-01", "price": 0}'
+```
+
+```js
+fetch(
+  'https://din25-events.jacinto-sanchez.workers.dev/api/v1/events',
+  {
+    method: 'POST',
+    headers: {
+      'x-api-key': 'API-KEY',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      title: 'New Event',
+      description: 'This is a new event.',
+      location: 'New Location',
+      date: '2025-01-01',
+      price: 0
+    })
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
 ```
 
 ### Examples
@@ -281,8 +303,9 @@ Example response:
 }
 ```
 
-
 ## Project recreation steps
+
+If you want to recreate this project, you can follow the steps below. You will need to have a Cloudflare account and Wrangler installed.
 
 ### Requirements
 

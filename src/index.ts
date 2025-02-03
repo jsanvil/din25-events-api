@@ -1,7 +1,7 @@
 import { Context, Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { swaggerUI } from '@hono/swagger-ui';
-import YAML from 'yaml';
+// import { swaggerUI } from '@hono/swagger-ui';
+// import YAML from 'yaml';
 
 import { drizzle } from 'drizzle-orm/d1';
 import { eq, gte, lte, like, or, and, sql, count, asc, desc } from 'drizzle-orm';
@@ -56,23 +56,8 @@ app.use('/api/*', async (c: Context<Environment>, next: () => Promise<void>) => 
 	await next();
 });
 
-// app.use('/ui', (c) => {
-// 	return c.html(`
-// 		<!DOCTYPE html>
-// 		<html>
-// 			<head>
-// 				<title>Swagger UI</title>
-// 				<link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3.52.0/swagger-ui.css" />
-// 			</head>
-// 			<body>
-// 			<h1>Swagger UI</h1>
-// 			${swaggerUI({ url: '/docs/swagger_v1.yaml' })}
-// 			</body>
-// 		</html>
-// 	`);
-// });
-
-
+// EVENTS TABLE SCHEMA
+//
 // `id` text(36) PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))) NOT NULL,
 // `title` text(50) NOT NULL,
 // `description` text(200) DEFAULT '',
@@ -290,5 +275,23 @@ app.get('/api/v1/events/:id', async (c: Context<Environment>) => {
 
 	return c.json(event, 200);
 });
+
+// -------------------- SWAGGER -------------------- //
+
+// TODO: Add Swagger UI
+
+// app.use('/ui', (c) => {
+// 	return c.html(`
+// 		<!DOCTYPE html>
+// 		<html>
+// 			<head>
+// 				<title>Swagger UI</title>
+// 			</head>
+// 			<body>
+// 			<h1>Swagger UI</h1>
+// 			</body>
+// 		</html>
+// 	`);
+// });
 
 export default app;
