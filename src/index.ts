@@ -25,20 +25,20 @@ type Environment = Env & {
 }
 
 function convertDate(date: string | number): string | undefined {
-  try {
-    let convertedDate
-    if (typeof date === 'number') {
-      convertedDate = new Date(date)
-    } else {
-      convertedDate = new Date(date)
-    }
+	try {
+		let convertedDate
+		if (typeof date === 'number') {
+			convertedDate = new Date(date)
+		} else {
+			convertedDate = new Date(date)
+		}
 
-	if (convertedDate instanceof Date && !isNaN(convertedDate.getTime())) {
-      return convertedDate.toISOString().slice(0, 19).replace('T', ' ')
-    }
-  } catch (e) {
-    return undefined
-  }
+		if (convertedDate instanceof Date && !isNaN(convertedDate.getTime())) {
+			return convertedDate.toISOString().slice(0, 19).replace('T', ' ')
+		}
+	} catch (e) {
+		return undefined
+	}
 }
 
 const app = new Hono<Environment>();
@@ -194,22 +194,32 @@ app.get('/api/v1/events', async (c: Context<Environment>) => {
 
 app.post('/api/v1/events', async (c: Context<Environment>) => {
 	try {
-	const db = drizzle(c.env.DB);
+		const db = drizzle(c.env.DB);
 
-	const { title, description, location, date, price, image } = await c.req.json();
+		const { title, description, location, date, price, image } = await c.req.json();
 
-	const event = await db.insert(eventsTable)
-		.values({
-			title,
-			description,
-			location,
-			date,
-			price,
-			image,
-		})
-		.returning();
+		// check if image size is less than 512KB
+		if (image && image.length > 512000) {
+			return c.json({ error: 'Image size must be less than 512KB' }, 400);
+		}
 
-	return c.json(event, 201);
+		// check if image is a valid URL or base64 string
+		if (image && !image.match(/^(http|https):\/\//) && !image.match(/^data:image\/[a-z]+;base64,/)) {
+			return c.json({ error: 'Invalid image URL or base64 string' }, 400);
+		}
+
+		const event = await db.insert(eventsTable)
+			.values({
+				title,
+				description,
+				location,
+				date,
+				price,
+				image,
+			})
+			.returning();
+
+		return c.json(event, 201);
 	} catch (error) {
 		if (error instanceof Error) {
 			c.json({ message: error.message }, 500);
@@ -226,6 +236,16 @@ app.put('/api/v1/events/:id', async (c: Context<Environment>) => {
 
 	const { title, description, location, date, price, image } = await c.req.json();
 	const { id } = c.req.param();
+
+	// check if image size is less than 512KB
+	if (image && image.length > 512000) {
+		return c.json({ error: 'Image size must be less than 512KB' }, 400);
+	}
+
+	// check if image is a valid URL or base64 string
+	if (image && !image.match(/^(http|https):\/\//) && !image.match(/^data:image\/[a-z]+;base64,/)) {
+		return c.json({ error: 'Invalid image URL or base64 string' }, 400);
+	}
 
 	const event = await db.update(eventsTable)
 		.set({
